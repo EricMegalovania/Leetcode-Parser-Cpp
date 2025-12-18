@@ -1,10 +1,9 @@
 #include <bits/stdc++.h>
-#include "../leetcode_parse.hpp"
-#include "vector_printer.hpp"
+#include "../leetcode_parser.hpp"
 
 using namespace std;
 using namespace leetcode_parser;
-using namespace VectorPrinter;
+using namespace leetcode_vector_printer;
 
 using LL = long long;
 
