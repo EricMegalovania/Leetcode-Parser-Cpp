@@ -250,7 +250,7 @@ namespace leetcode_input {
 		}
 	}
 	
-} // namespace leetcode_parser
+} // namespace leetcode_input
 
 namespace leetcode_output {
 

@@ -30,8 +30,7 @@ Copy raw inputs to test cases, and you can test locally.
 #include <bits/stdc++.h>
 #include <local/leetcode_parser.hpp>
 using namespace std;
-using namespace leetcode_parser;
-using namespace leetcode_vector_printer;
+using namespace leetcode_IOWrapper;
 
 int main() {
     auto [_string, _bool, vv_double, _ll] = read<string, bool, vector<vector<double>>, LL>();
