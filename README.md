@@ -27,13 +27,13 @@ PATH_TO_MINGW64_FOLDER\mingw64\lib\gcc\x86_64-w64-mingw32\11.5.0\include\c++\loc
 Copy raw inputs to test cases, and you can test locally.
 
 ```cpp
-#include<bits/stdc++.h>
-#include<local/leetcode_parser.hpp>
+#include <bits/stdc++.h>
+#include <local/leetcode_parser.hpp>
 using namespace std;
 using namespace leetcode_parser;
 using namespace leetcode_vector_printer;
 
-int main(){
+int main() {
     auto [_string, _bool, vv_double, _ll] = read<string, bool, vector<vector<double>>, LL>();
 	write(_string, _bool, vv_double, _ll);
     return 0;
