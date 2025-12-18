@@ -104,3 +104,7 @@ vv_2x1_double = [
   [1919.81]
 ]
 ```
+
+## License
+
+MIT License
