@@ -5,9 +5,6 @@ using namespace std;
 using namespace leetcode_IOWrapper;
 
 using LL = long long;
-
-#include<local/dbg.h>
-
 int main() {
 	freopen("input.txt","r",stdin);
 	
