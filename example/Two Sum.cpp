@@ -14,11 +14,10 @@ public:
 };
 
 #include"../leetcode_parser.hpp"
-using namespace leetcode_vector_printer;
-using namespace leetcode_input_wrapper;
+using namespace leetcode_IOWrapper;
 int main(){
     auto [nums,target]=read<vector<int>,int>();
 	vector<int> ans=Solution().twoSum(nums,target);
-	printRaw(ans);
+	writeRaw(ans);
 	return 0;
 }

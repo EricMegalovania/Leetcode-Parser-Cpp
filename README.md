@@ -20,7 +20,7 @@ PATH_TO_MINGW64_FOLDER\mingw64\lib\gcc\x86_64-w64-mingw32\11.5.0\include\c++\loc
 
 ## Usage
 
-![image-20251218130933532](./img/image-20251218130933532.png)
+![image-20251218194010300](./img/image-20251218194010300.png)
 
 **Suggest to use along with [cph](https://github.com/agrawal-d/cph) !!!**
 
@@ -32,17 +32,11 @@ using namespace leetcode_parser;
 using namespace leetcode_vector_printer;
 
 int main(){
-    int _int = parse<int>();
-	long long _ll = parse<long long>();
-	bool _bool = parse<bool>();
-	double _double = parse<double>();
-	char _char = parse<char>();
-	string _str = parse<string>();
-	vector<int> v_int = parseVector<int>();
-	vector<string> v_string = parseVector<string>();
-	vector<double> v_double = parseVector<double>();
-	vector<vector<int>> vv_int = parseVector2D<int>();
-	vector<vector<double>> vv_double = parseVector2D<double>();
+    auto [_string, _bool, vv_double, _ll] = read<string, bool, vector<vector<double>>, LL>();
+	print(_string);
+	print(_bool);
+	print(vv_double);
+	print(_ll);
     return 0;
 }
 ```

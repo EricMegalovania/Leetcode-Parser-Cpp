@@ -11,6 +11,24 @@
 #include <optional>
 #include <type_traits>
 
+class internal_debug {
+	static bool debug_mode;
+public:
+	void toggle_debug_mode() {
+		debug_mode = !debug_mode;
+	}
+	void unset_debug_mode() {
+		debug_mode = false;
+	}
+	void set_debug_mode(bool _f = true) {
+		debug_mode = _f;
+	}
+	bool is_debug_mode() const {
+		return debug_mode;
+	}
+};
+inline bool internal_debug::debug_mode = false;
+
 namespace internal_vector_depth {
 
 	template <typename T>
@@ -27,7 +45,7 @@ namespace internal_vector_depth {
 
 } // namespace internal_vector_depth
 
-namespace leetcode_parser {
+namespace leetcode_input {
 
 	namespace internal_basic {
 
@@ -65,7 +83,7 @@ namespace leetcode_parser {
 
 	} // namespace internal_basic
 	
-	namespace internal_parser{
+	namespace internal_parser {
 		using namespace internal_basic;
 
 		template <typename T>
@@ -213,9 +231,11 @@ namespace leetcode_parser {
 	} // namespace internal_parser
 	
 	template <typename T>
-	T parse() {
+	T input() {
 		constexpr int depth = internal_vector_depth::vector_depth<T>::value;
-		// std::cerr << "[parse] type name: " << typeid(T).name() << " depth: " << depth << std::endl;
+		if(internal_debug().is_debug_mode()) {
+			std::cerr << "[input] type name: " << typeid(T).name() << " depth: " << depth << std::endl;
+		}
 		using _T = typename internal_vector_depth::vector_depth<T>::inner_type;
 		std::string line=internal_basic::readLine(std::cin);
 		std::istringstream iss(line);
@@ -232,9 +252,9 @@ namespace leetcode_parser {
 	
 } // namespace leetcode_parser
 
-namespace leetcode_vector_printer {
+namespace leetcode_output {
 
-	namespace internal_print {
+	namespace internal_output {
 
 		template <typename T>
 		void _printElement(const T& element, const std::optional<std::string>& name = std::nullopt, bool printEndl = true) {
@@ -289,40 +309,63 @@ namespace leetcode_vector_printer {
 			std::cout << "]" << std::endl;
 		}
 
-		template <typename T>
-		void _print(const T& variable, const std::optional<std::string>& name = std::nullopt) {
-			constexpr int depth = internal_vector_depth::vector_depth<T>::value;
-			if constexpr (depth == 0) {
-				_printElement(variable, name);
-			} else if constexpr (depth == 1) {
-				_printVector(variable, name);
-			} else if constexpr (depth == 2) {
-				_printVector2D(variable, name);
-			} else {
-				throw std::invalid_argument("Unsupported vector depth");
-			}
+	} // namespace internal_output
+
+	template <typename T>
+	void _print(const T& variable, const std::optional<std::string>& name = std::nullopt) {
+		if(internal_debug().is_debug_mode()) {
+			std::cerr << "[print] type name: " << typeid(T).name() << std::endl;
 		}
+		constexpr int depth = internal_vector_depth::vector_depth<T>::value;
+		if constexpr (depth == 0) {
+			internal_output::_printElement(variable, name);
+		} else if constexpr (depth == 1) {
+			internal_output::_printVector(variable, name);
+		} else if constexpr (depth == 2) {
+			internal_output::_printVector2D(variable, name);
+		} else {
+			throw std::invalid_argument("Unsupported vector depth");
+		}
+	}
+	
+} // namespace leetcode_output
 
-	} // namespace internal_print
-
-	#define printRaw(x) internal_print::_print(x)
-	#define print(x) internal_print::_print(x, #x)
-
-} // namespace leetcode_vector_printer
-
-namespace leetcode_input_wrapper {
+namespace leetcode_IOWrapper {
 	
 	template <typename T, typename... Ts>
 	auto read() {
-		// std::cerr << "[read] type name: " << typeid(T).name() << std::endl;
-		auto tuple_x = std::make_tuple(leetcode_parser::parse<T>());
+		if(internal_debug().is_debug_mode()) {
+			std::cerr << "[read] type name: " << typeid(T).name() << std::endl;
+		}
+		auto tuple_x = std::make_tuple(leetcode_input::input<T>());
 		if constexpr (sizeof...(Ts) == 0) {
 			return tuple_x;
 		} else {
 			return std::tuple_cat(std::move(tuple_x), read<Ts...>());
 		}
 	}
+	
+	#define _INTERNAL_OWRAPPER_COUNT_ARGS(...) _INTERNAL_OWRAPPER_COUNT_ARGS_IMPL(__VA_ARGS__, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+	#define _INTERNAL_OWRAPPER_COUNT_ARGS_IMPL(_1, _2, _3, _4, _5, _6, _7, _8, N, ...) N
+	#define _INTERNAL_OWRAPPER_APPLY_TO_EACH(func, ...) _INTERNAL_OWRAPPER_APPLY_TO_EACH_IMPL(_INTERNAL_OWRAPPER_COUNT_ARGS(__VA_ARGS__), func, __VA_ARGS__)
+	#define _INTERNAL_OWRAPPER_APPLY_TO_EACH_IMPL(count, func, ...) _INTERNAL_OWRAPPER_APPLY_TO_EACH_IMPL_(count, func, __VA_ARGS__)
+	#define _INTERNAL_OWRAPPER_APPLY_TO_EACH_IMPL_(count, func, ...) _INTERNAL_OWRAPPER_APPLY_TO_EACH_IMPL_##count(func, __VA_ARGS__)
+	#define _INTERNAL_OWRAPPER_APPLY_TO_EACH_IMPL_0(func)
+	#define _INTERNAL_OWRAPPER_APPLY_TO_EACH_IMPL_1(func, a) func(a)
+	#define _INTERNAL_OWRAPPER_APPLY_TO_EACH_IMPL_2(func, a, b) func(a) func(b)
+	#define _INTERNAL_OWRAPPER_APPLY_TO_EACH_IMPL_3(func, a, b, c) func(a) func(b) func(c)
+	#define _INTERNAL_OWRAPPER_APPLY_TO_EACH_IMPL_4(func, a, b, c, d) func(a) func(b) func(c) func(d)
+	#define _INTERNAL_OWRAPPER_APPLY_TO_EACH_IMPL_5(func, a, b, c, d, e) func(a) func(b) func(c) func(d) func(e)
+	#define _INTERNAL_OWRAPPER_APPLY_TO_EACH_IMPL_6(func, a, b, c, d, e, f) func(a) func(b) func(c) func(d) func(e) func(f)
+	#define _INTERNAL_OWRAPPER_APPLY_TO_EACH_IMPL_7(func, a, b, c, d, e, f, g) func(a) func(b) func(c) func(d) func(e) func(f) func(g)
+	#define _INTERNAL_OWRAPPER_APPLY_TO_EACH_IMPL_8(func, a, b, c, d, e, f, g, h) func(a) func(b) func(c) func(d) func(e) func(f) func(g) func(h)
 
-} // namespace leetcode_input_wrapper
+	#define _internal_print(x) leetcode_output::_print(x, #x);
+	#define write(...) _INTERNAL_OWRAPPER_APPLY_TO_EACH(_internal_print, __VA_ARGS__)
+
+	#define _internal_printRaw(x) leetcode_output::_print(x);
+	#define writeRaw(...) _INTERNAL_OWRAPPER_APPLY_TO_EACH(_internal_printRaw, __VA_ARGS__)
+
+} // namespace leetcode_IOWrapper
 
 #endif // __LEETCODE_PARSER_HPP__
