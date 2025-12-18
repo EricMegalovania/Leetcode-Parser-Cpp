@@ -13,13 +13,12 @@ public:
     }
 };
 
-#include<local/leetcode_parser.hpp>
-using namespace leetcode_parser;
+#include"../leetcode_parser.hpp"
 using namespace leetcode_vector_printer;
+using namespace leetcode_input_wrapper;
 int main(){
-	vector<int> nums=parseVector<int>();
-	int target=parse<int>();
+    auto [nums,target]=read<vector<int>,int>();
 	vector<int> ans=Solution().twoSum(nums,target);
-	printVector("ans",ans,false);
+	printRaw(ans);
 	return 0;
 }

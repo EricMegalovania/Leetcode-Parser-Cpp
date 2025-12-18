@@ -2,15 +2,35 @@
 #define __LEETCODE_PARSER_HPP__
 
 #include <iostream>
+#include <tuple>
 #include <vector>
 #include <string>
 #include <sstream>
 #include <cctype>
 #include <stdexcept>
+#include <optional>
+#include <type_traits>
+
+namespace internal_vector_depth {
+
+	template <typename T>
+	struct vector_depth {
+		static constexpr int value = 0;
+		using inner_type = T;
+	};
+
+	template<typename T>
+	struct vector_depth<std::vector<T>> {
+		static constexpr int value = 1 + vector_depth<T>::value;
+		using inner_type = typename vector_depth<T>::inner_type;
+	};
+
+} // namespace internal_vector_depth
 
 namespace leetcode_parser {
 
 	namespace internal_basic {
+
 		inline std::string readLine(std::istream& is) {
 			std::string line;
 			while(std::getline(is, line)){
@@ -22,21 +42,27 @@ namespace leetcode_parser {
 			}
 			return "";
 		}
+
 		inline void skipWhitespace(std::istream& is) {
 			while (std::isspace(is.peek())) is.get();
 		}
+
 		inline char peekNextChar(std::istream& is) {
 			return static_cast<char>(is.peek());
 		}
+
 		inline bool isVectorStart(char ch) {
 			return ch == '[';
 		}
+
 		inline bool isVectorEnd(char ch) {
 			return ch == ']';
 		}
+
 		inline bool isSeparator(char ch) {
 			return ch == ',';
 		}
+
 	} // namespace internal_basic
 	
 	namespace internal_parser{
@@ -188,76 +214,115 @@ namespace leetcode_parser {
 	
 	template <typename T>
 	T parse() {
+		constexpr int depth = internal_vector_depth::vector_depth<T>::value;
+		// std::cerr << "[parse] type name: " << typeid(T).name() << " depth: " << depth << std::endl;
+		using _T = typename internal_vector_depth::vector_depth<T>::inner_type;
 		std::string line=internal_basic::readLine(std::cin);
 		std::istringstream iss(line);
-		return internal_parser::_parse<T>(iss);
-	}
-	
-	template <typename T>
-	std::vector<T> parseVector() {
-		std::string line=internal_basic::readLine(std::cin);
-		std::istringstream iss(line);
-		return internal_parser::_parseVector<T>(iss);
-	}
-	
-	template <typename T>
-	std::vector<std::vector<T>> parseVector2D() {
-		std::string line=internal_basic::readLine(std::cin);
-		std::istringstream iss(line);
-		return internal_parser::_parseVector2D<T>(iss);
+		if constexpr (depth == 0) {
+			return internal_parser::_parse<_T>(iss);
+		} else if constexpr (depth == 1) {
+			return internal_parser::_parseVector<_T>(iss);
+		} else if constexpr (depth == 2) {
+			return internal_parser::_parseVector2D<_T>(iss);
+		} else {
+			throw std::invalid_argument("Unsupported vector depth");
+		}
 	}
 	
 } // namespace leetcode_parser
 
 namespace leetcode_vector_printer {
 
-	template<typename T>
-	void printElement(const T& element) {
-		std::cout << element;
-	}
+	namespace internal_print {
 
-	template<typename T>
-	void printElement(const std::vector<T>& element) {
-		printVector("", element, false);
-	}
-	
-	template<typename T>
-	void printVector(const std::string& name, const std::vector<T>& vec, bool printName = true, bool printEndl = true) {
-		if (printName) {
-			std::cout << name << " = ";
-		}
-		
-		std::cout << "[";
-		for (size_t i = 0; i < vec.size(); ++i) {
-			printElement(vec[i]);
-			if (i != vec.size() - 1) {
-				std::cout << ", ";
+		template <typename T>
+		void _printElement(const T& element, const std::optional<std::string>& name = std::nullopt, bool printEndl = true) {
+			if (name.has_value()) {
+				std::cout << name.value() << " = ";
+			}
+			constexpr bool quote = std::is_same_v<T, std::string> || std::is_same_v<T, char>;
+			if constexpr (quote) {
+				std::cout<<"\"";
+			}
+			std::cout << element;
+			if constexpr (quote) {
+				std::cout<<"\"";
+			}
+			if (printEndl) {
+				std::cout << std::endl;
 			}
 		}
-		std::cout << "]";
-		if (printEndl) {
-			std::cout << std::endl;
-		}
-	}
-
-	template<typename T>
-	void printVector2D(const std::string& name, const std::vector<std::vector<T>>& vec2D, bool printName = true) {
-		if (printName) {
-			std::cout << name << " = ";
-		}
 		
-		std::cout << "[" << std::endl;
-		for (size_t i = 0; i < vec2D.size(); ++i) {
-			std::cout << "  ";
-			printVector("", vec2D[i], false, false);
-			if (i != vec2D.size() - 1) {
-				std::cout << ",";
+		template <typename T>
+		void _printVector(const std::vector<T>& vec, const std::optional<std::string>& name = std::nullopt, bool printEndl = true) {
+			if (name.has_value()) {
+				std::cout << name.value() << " = ";
 			}
-			std::cout << std::endl;
+			std::cout << "[";
+			for (size_t i = 0; i < vec.size(); ++i) {
+				_printElement(vec[i], std::nullopt, false);
+				if (i != vec.size() - 1) {
+					std::cout << ", ";
+				}
+			}
+			std::cout << "]";
+			if (printEndl) {
+				std::cout << std::endl;
+			}
 		}
-		std::cout << "]" << std::endl;
-	}
+
+		template <typename T>
+		void _printVector2D(const std::vector<std::vector<T>>& vec2D, const std::optional<std::string>& name = std::nullopt) {
+			if (name.has_value()) {
+				std::cout << name.value() << " = ";
+			}
+			std::cout << "[" << std::endl;
+			for (size_t i = 0; i < vec2D.size(); ++i) {
+				std::cout << "  ";
+				_printVector(vec2D[i], std::nullopt, false);
+				if (i != vec2D.size() - 1) {
+					std::cout << ",";
+				}
+				std::cout << std::endl;
+			}
+			std::cout << "]" << std::endl;
+		}
+
+		template <typename T>
+		void _print(const T& variable, const std::optional<std::string>& name = std::nullopt) {
+			constexpr int depth = internal_vector_depth::vector_depth<T>::value;
+			if constexpr (depth == 0) {
+				_printElement(variable, name);
+			} else if constexpr (depth == 1) {
+				_printVector(variable, name);
+			} else if constexpr (depth == 2) {
+				_printVector2D(variable, name);
+			} else {
+				throw std::invalid_argument("Unsupported vector depth");
+			}
+		}
+
+	} // namespace internal_print
+
+	#define printRaw(x) internal_print::_print(x)
+	#define print(x) internal_print::_print(x, #x)
 
 } // namespace leetcode_vector_printer
+
+namespace leetcode_input_wrapper {
+	
+	template <typename T, typename... Ts>
+	auto read() {
+		// std::cerr << "[read] type name: " << typeid(T).name() << std::endl;
+		auto tuple_x = std::make_tuple(leetcode_parser::parse<T>());
+		if constexpr (sizeof...(Ts) == 0) {
+			return tuple_x;
+		} else {
+			return std::tuple_cat(std::move(tuple_x), read<Ts...>());
+		}
+	}
+
+} // namespace leetcode_input_wrapper
 
 #endif // __LEETCODE_PARSER_HPP__

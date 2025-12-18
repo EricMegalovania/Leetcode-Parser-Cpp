@@ -2,79 +2,86 @@
 #include "../leetcode_parser.hpp"
 
 using namespace std;
-using namespace leetcode_parser;
 using namespace leetcode_vector_printer;
+using namespace leetcode_input_wrapper;
 
 using LL = long long;
 
 int main() {
 	freopen("input.txt","r",stdin);
 	
-	int i1 = parse<int>();
-	int i2 = parse<int>();
-	int i3 = parse<int>();
-	int i4 = parse<int>();
-	cout << "i1: " << i1 << endl;
-	cout << "i2: " << i2 << endl;
-	cout << "i3: " << i3 << endl;
-	cout << "i4: " << i4 << endl;
+	auto [i1] = read<int>();
+	auto [i2] = read<int>();
+	auto [i3] = read<int>();
+	auto [i4] = read<int>();
+	print(i1);
+	print(i2);
+	print(i3);
+	print(i4);
+		
+	auto [ll1] = read<LL>();
+	auto [ll2] = read<LL>();
+	auto [ll3] = read<LL>();
+	auto [ll4] = read<LL>();
+	print(ll1);
+	print(ll2);
+	print(ll3);
+	print(ll4);
 	
-	LL ll1 = parse<LL>();
-	LL ll2 = parse<LL>();
-	LL ll3 = parse<LL>();
-	LL ll4 = parse<LL>();
-	cout << "ll1: " << ll1 << endl;
-	cout << "ll2: " << ll2 << endl;
-	cout << "ll3: " << ll3 << endl;
-	cout << "ll4: " << ll4 << endl;
+	auto [b1] = read<bool>();
+	auto [b2] = read<bool>();
+	print(b1);
+	print(b2);
 	
-	bool b1 = parse<bool>();
-	bool b2 = parse<bool>();
-	cout << "b1: " << (b1 ? "true" : "false") << endl;
-	cout << "b2: " << (b2 ? "true" : "false") << endl;
+	auto [d1] = read<double>();
+	auto [d2] = read<double>();
+	auto [d3] = read<double>();
+	print(d1);
+	print(d2);
+	print(d3);
 	
-	double d1 = parse<double>();
-	double d2 = parse<double>();
-	double d3 = parse<double>();
-	cout << "d1: " << d1 << endl;
-	cout << "d2: " << d2 << endl;
-	cout << "d3: " << d3 << endl;
+	auto [c1] = read<char>();
+	auto [c2] = read<char>();
+	auto [c3] = read<char>();
+	print(c1);
+	print(c2);
+	print(c3);
 	
-	char c1 = parse<char>();
-	char c2 = parse<char>();
-	char c3 = parse<char>();
-	cout << "c1: '" << c1 << "'" << endl;
-	cout << "c2: '" << c2 << "'" << endl;
-	cout << "c3: '" << c3 << "'" << endl;
+	auto [s1] = read<string>();
+	auto [s2] = read<string>();
+	auto [s3] = read<string>();
+	print(s1);
+	print(s2);
+	print(s3);
 	
-	string s1 = parse<string>();
-	string s2 = parse<string>();
-	string s3 = parse<string>();
-	cout << "s1: \"" << s1 << "\"" << endl;
-	cout << "s2: \"" << s2 << "\"" << endl;
-	cout << "s3: \"" << s3 << "\"" << endl;
-	
-	vector<int> v_empty = parseVector<int>();
-	vector<int> v_int = parseVector<int>();
-	vector<string> v_string = parseVector<string>();
-	vector<double> v_double = parseVector<double>();
-	printVector("v_empty", v_empty);
-	printVector("v_int", v_int);
-	printVector("v_string", v_string);
-	printVector("v_double", v_double);
-	
-	vector<vector<int>> vv_empty = parseVector2D<int>();
-	vector<vector<int>> vv_1row_0elements = parseVector2D<int>();
-	vector<vector<int>> vv_1row_1element = parseVector2D<int>();
-	vector<vector<int>> vv_2x2 = parseVector2D<int>();
-	vector<vector<int>> vv_3rows = parseVector2D<int>();
-	vector<vector<double>> vv_2x1_double = parseVector2D<double>();
-	printVector2D("vv_empty", vv_empty);
-	printVector2D("vv_1row_0elements", vv_1row_0elements);
-	printVector2D("vv_1row_1element", vv_1row_1element);
-	printVector2D("vv_2x2", vv_2x2);
-	printVector2D("vv_3rows", vv_3rows);
-	printVector2D("vv_2x1_double", vv_2x1_double);
+	auto [v_empty] = read<vector<int>>();
+	auto [v_int] = read<vector<int>>();
+	auto [v_string] = read<vector<string>>();
+	auto [v_double] = read<vector<double>>();
+	print(v_empty);
+	print(v_int);
+	print(v_string);
+	print(v_double);
+		
+	auto [vv_empty] = read<vector<vector<int>>>();
+	auto [vv_1row_0elements] = read<vector<vector<int>>>();
+	auto [vv_1row_1element] = read<vector<vector<int>>>();
+	auto [vv_2x2] = read<vector<vector<int>>>();
+	auto [vv_3rows] = read<vector<vector<int>>>();
+	auto [vv_2x1_double] = read<vector<vector<double>>>();
+	auto [vv_2x1_string] = read<vector<vector<string>>>();
+	print(vv_empty);
+	print(vv_1row_0elements);
+	print(vv_1row_1element);
+	print(vv_2x2);
+	print(vv_3rows);
+	print(vv_2x1_double);
+	print(vv_2x1_string);
 
+	auto [_string, _bool, vv_double, _ll] = read<string, bool, vector<vector<double>>, LL>();
+	print(_string);
+	print(_bool);
+	print(vv_double);
+	print(_ll);
 	return 0;
 }
