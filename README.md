@@ -32,6 +32,7 @@ Copy raw inputs to test cases, and you can test locally.
 using namespace std;
 using namespace leetcode_IOWrapper;
 
+using LL = long long;
 int main() {
     auto [_string, _bool, vv_double, _ll] = read<string, bool, vector<vector<double>>, LL>();
 	write(_string, _bool, vv_double, _ll);
