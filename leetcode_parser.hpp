@@ -256,54 +256,55 @@ namespace leetcode_output {
 
 	namespace internal_output {
 
-		template <typename T>
-		void _printElement(const T& element, const std::optional<std::string>& name = std::nullopt, bool printEndl = true) {
+		template <typename T, bool printEndl = true, bool printSpace = true>
+		void _printElement(const T& element, const std::optional<std::string>& name = std::nullopt) {
 			if (name.has_value()) {
-				std::cout << name.value() << " = ";
+				std::cout << name.value();
+				if constexpr (printSpace) std::cout << " ";
+				std::cout << "=";
+				if constexpr (printSpace) std::cout << " ";
 			}
 			constexpr bool quote = std::is_same_v<T, std::string> || std::is_same_v<T, char>;
-			if constexpr (quote) {
-				std::cout<<"\"";
-			}
+			if constexpr (quote) std::cout<<"\"";
 			std::cout << element;
-			if constexpr (quote) {
-				std::cout<<"\"";
-			}
-			if (printEndl) {
-				std::cout << std::endl;
-			}
+			if constexpr (quote) std::cout<<"\"";
+			if constexpr (printEndl) std::cout << std::endl;
 		}
 		
-		template <typename T>
-		void _printVector(const std::vector<T>& vec, const std::optional<std::string>& name = std::nullopt, bool printEndl = true) {
+		template <typename T, bool printEndl = true, bool printSpace = true>
+		void _printVector(const std::vector<T>& vec, const std::optional<std::string>& name = std::nullopt) {
 			if (name.has_value()) {
-				std::cout << name.value() << " = ";
+				std::cout << name.value();
+				if constexpr (printSpace) std::cout << " ";
+				std::cout << "=";
+				if constexpr (printSpace) std::cout << " ";
 			}
 			std::cout << "[";
 			for (size_t i = 0; i < vec.size(); ++i) {
-				_printElement(vec[i], std::nullopt, false);
+				_printElement<T, false, printSpace>(vec[i], std::nullopt);
 				if (i != vec.size() - 1) {
-					std::cout << ", ";
+					std::cout << ",";
+					if constexpr (printSpace) std::cout << " ";
 				}
 			}
 			std::cout << "]";
-			if (printEndl) {
-				std::cout << std::endl;
-			}
+			if constexpr (printEndl) std::cout << std::endl;
 		}
 
-		template <typename T>
+		template <typename T, bool printEndl = true, bool printSpace = true>
 		void _printVector2D(const std::vector<std::vector<T>>& vec2D, const std::optional<std::string>& name = std::nullopt) {
+			// well, printEndl is not used in this function
 			if (name.has_value()) {
-				std::cout << name.value() << " = ";
+				std::cout << name.value();
+				if constexpr (printSpace) std::cout << " ";
+				std::cout << "=";
+				if constexpr (printSpace) std::cout << " ";
 			}
 			std::cout << "[" << std::endl;
 			for (size_t i = 0; i < vec2D.size(); ++i) {
 				std::cout << "  ";
-				_printVector(vec2D[i], std::nullopt, false);
-				if (i != vec2D.size() - 1) {
-					std::cout << ",";
-				}
+				_printVector<T, false, printSpace>(vec2D[i], std::nullopt);
+				if (i != vec2D.size() - 1) std::cout << ",";
 				std::cout << std::endl;
 			}
 			std::cout << "]" << std::endl;
@@ -311,18 +312,19 @@ namespace leetcode_output {
 
 	} // namespace internal_output
 
-	template <typename T>
+	template <typename T, bool printSpace = true>
 	void _print(const T& variable, const std::optional<std::string>& name = std::nullopt) {
 		if(internal_debug().is_debug_mode()) {
 			std::cerr << "[print] type name: " << typeid(T).name() << std::endl;
 		}
 		constexpr int depth = internal_vector_depth::vector_depth<T>::value;
+		using _T = typename internal_vector_depth::vector_depth<T>::inner_type;
 		if constexpr (depth == 0) {
-			internal_output::_printElement(variable, name);
+			internal_output::_printElement<_T, true, printSpace>(variable, name);
 		} else if constexpr (depth == 1) {
-			internal_output::_printVector(variable, name);
+			internal_output::_printVector<_T, true, printSpace>(variable, name);
 		} else if constexpr (depth == 2) {
-			internal_output::_printVector2D(variable, name);
+			internal_output::_printVector2D<_T, true, printSpace>(variable, name);
 		} else {
 			throw std::invalid_argument("Unsupported vector depth");
 		}
@@ -360,11 +362,17 @@ namespace leetcode_IOWrapper {
 	#define _INTERNAL_OWRAPPER_APPLY_TO_EACH_IMPL_7(func, a, b, c, d, e, f, g) func(a) func(b) func(c) func(d) func(e) func(f) func(g)
 	#define _INTERNAL_OWRAPPER_APPLY_TO_EACH_IMPL_8(func, a, b, c, d, e, f, g, h) func(a) func(b) func(c) func(d) func(e) func(f) func(g) func(h)
 
-	#define _internal_print(x) leetcode_output::_print(x, #x);
+	#define _internal_print(x) leetcode_output::_print<decltype(x), true>(x, #x);
 	#define write(...) _INTERNAL_OWRAPPER_APPLY_TO_EACH(_internal_print, __VA_ARGS__)
 
-	#define _internal_printRaw(x) leetcode_output::_print(x);
+	#define _internal_printRaw(x) leetcode_output::_print<decltype(x), true>(x);
 	#define writeRaw(...) _INTERNAL_OWRAPPER_APPLY_TO_EACH(_internal_printRaw, __VA_ARGS__)
+
+	#define _internal_printNoSpace(x) leetcode_output::_print<decltype(x), false>(x, #x);
+	#define writeNoSpace(...) _INTERNAL_OWRAPPER_APPLY_TO_EACH(_internal_printNoSpace, __VA_ARGS__)
+
+	#define _internal_printRawNoSpace(x) leetcode_output::_print<decltype(x), false>(x);
+	#define writeRawNoSpace(...) _INTERNAL_OWRAPPER_APPLY_TO_EACH(_internal_printRawNoSpace, __VA_ARGS__)
 
 } // namespace leetcode_IOWrapper
 

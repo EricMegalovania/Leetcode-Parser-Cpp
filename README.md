@@ -35,7 +35,7 @@ using namespace leetcode_IOWrapper;
 using LL = long long;
 int main() {
     auto [_string, _bool, vv_double, _ll] = read<string, bool, vector<vector<double>>, LL>();
-	write(_string, _bool, vv_double, _ll);
+    write(_string, _bool, vv_double, _ll);
     return 0;
 }
 ```
