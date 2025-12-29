@@ -266,7 +266,12 @@ namespace leetcode_output {
 			}
 			constexpr bool quote = std::is_same_v<T, std::string> || std::is_same_v<T, char>;
 			if constexpr (quote) std::cout<<"\"";
-			std::cout << element;
+			if constexpr (std::is_same_v<T, bool>){
+				std::cout << (element ? "true" : "false");
+			}
+			else{
+				std::cout << element;
+			}
 			if constexpr (quote) std::cout<<"\"";
 			if constexpr (printEndl) std::cout << std::endl;
 		}
