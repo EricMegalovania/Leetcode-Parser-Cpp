@@ -1,6 +1,7 @@
 #ifndef __LEETCODE_PARSER_HPP__
 #define __LEETCODE_PARSER_HPP__
 
+#include <cstring>
 #include <iostream>
 #include <tuple>
 #include <vector>
@@ -10,6 +11,7 @@
 #include <stdexcept>
 #include <optional>
 #include <type_traits>
+#include <queue>
 
 class internal_debug {
 	static bool debug_mode;
@@ -44,6 +46,17 @@ namespace internal_vector_depth {
 	};
 
 } // namespace internal_vector_depth
+
+namespace leetcode_struct {
+	struct TreeNode {
+		int val;
+		TreeNode *left;
+		TreeNode *right;
+		TreeNode() : val(0), left(nullptr), right(nullptr) {}
+		TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+		TreeNode(int x, TreeNode *ls, TreeNode *rs) : val(x), left(ls), right(rs) {}
+	};
+}
 
 namespace leetcode_input {
 
@@ -228,6 +241,73 @@ namespace leetcode_input {
 			
 			return result;
 		}
+
+		template <>
+		inline leetcode_struct::TreeNode* _parse<leetcode_struct::TreeNode*>(std::istream& is) {
+			skipWhitespace(is);
+			if (!isVectorStart(peekNextChar(is))) {
+				throw std::invalid_argument("TreeNode* must start with '['");
+			} else {
+				is.get();
+			}
+			
+			skipWhitespace(is);
+			if(is.eof()) {
+				throw std::invalid_argument("TreeNode* must end with ']'");
+			}
+			if (isVectorEnd(peekNextChar(is))) {
+				is.get();
+				return nullptr;
+			}
+			
+			std::queue<leetcode_struct::TreeNode*> waitReadChildren;
+			auto readTreeNodeAndPush = [&](auto&& node) -> bool {
+				skipWhitespace(is);
+				if (isVectorStart(peekNextChar(is))) {
+					throw std::invalid_argument("Unexpected nested vector in TreeNode*");
+				} else {
+					if (peekNextChar(is) == 'n') {
+						char buffer[4];
+						is.read(buffer, 4);
+						if (!is || std::strncmp(buffer, "null", 4) != 0) {
+							throw std::invalid_argument("Invalid null input");
+						}
+						node = nullptr;
+					} else {
+						node = new leetcode_struct::TreeNode(_parse<int>(is));
+						waitReadChildren.push(node);
+					}
+				}
+				
+				skipWhitespace(is);
+				if (isVectorEnd(peekNextChar(is))) {
+					is.get(); return 0;
+				} else if (isSeparator(peekNextChar(is))) {
+					is.get();
+				} else {
+					throw std::invalid_argument("Expected ',' or ']' after TreeNode* element \'" + std::string(1, peekNextChar(is)) + std::string("\'"));
+				}
+
+				return 1;
+			};
+
+			leetcode_struct::TreeNode* root = nullptr;
+			if(!readTreeNodeAndPush(root)) return root;
+
+			while (true) {
+				if (waitReadChildren.empty()) {
+					throw std::runtime_error("TreeNode* queue is empty in reading");
+				}
+
+				leetcode_struct::TreeNode* node = waitReadChildren.front();
+				waitReadChildren.pop();
+
+				if(!readTreeNodeAndPush(node->left)) break;
+				if(!readTreeNodeAndPush(node->right)) break;
+			}
+			
+			return root;
+		}
 	} // namespace internal_parser
 	
 	template <typename T>
@@ -273,6 +353,47 @@ namespace leetcode_output {
 				std::cout << element;
 			}
 			if constexpr (quote) std::cout<<"\"";
+			if constexpr (printEndl) std::cout << std::endl;
+		}
+
+		template <bool printEndl = true, bool printSpace = true>
+		void _printTreeNode(const leetcode_struct::TreeNode* root, const std::optional<std::string>& name = std::nullopt) {
+			if (name.has_value()) {
+				std::cout << name.value();
+				if constexpr (printSpace) std::cout << " ";
+				std::cout << "=";
+				if constexpr (printSpace) std::cout << " ";
+			}
+			std::cout << "[";
+
+			bool print_first = true;
+			std::queue<leetcode_struct::TreeNode*> waitPrintChildren;
+			std::stringstream buf;
+			auto printTreeNodeAndPush = [&](const leetcode_struct::TreeNode* node) -> void {
+				if (!print_first){
+					buf << ",";
+					if constexpr (printSpace) buf << " ";
+				}
+				else print_first = false;
+
+				if (node != nullptr) {
+					buf << node->val;
+					std::cout << buf.str();
+					buf.str("");
+					waitPrintChildren.push(node->left);
+					waitPrintChildren.push(node->right);
+				} else {
+					buf << "null";
+				}
+			};
+			printTreeNodeAndPush(root);
+
+			while (!waitPrintChildren.empty()) {
+				printTreeNodeAndPush(waitPrintChildren.front());
+				waitPrintChildren.pop();
+			}
+
+			std::cout << "]";
 			if constexpr (printEndl) std::cout << std::endl;
 		}
 		
@@ -325,7 +446,11 @@ namespace leetcode_output {
 		constexpr int depth = internal_vector_depth::vector_depth<T>::value;
 		using _T = typename internal_vector_depth::vector_depth<T>::inner_type;
 		if constexpr (depth == 0) {
-			internal_output::_printElement<_T, true, printSpace>(variable, name);
+			if constexpr (std::is_same_v<_T, leetcode_struct::TreeNode*>) {
+				internal_output::_printTreeNode<true, printSpace>(variable, name);
+			} else {
+				internal_output::_printElement<_T, true, printSpace>(variable, name);
+			}
 		} else if constexpr (depth == 1) {
 			internal_output::_printVector<_T, true, printSpace>(variable, name);
 		} else if constexpr (depth == 2) {

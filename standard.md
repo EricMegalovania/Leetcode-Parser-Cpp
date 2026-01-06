@@ -23,5 +23,43 @@ from <https://support.leetcode.com/hc/en-us/articles/32442719377939-How-to-creat
 > | :------- | :----------------------------------------------------------- | :----------------------------------------------------------- | :----------------------------------------------------------- |
 > | Array    | A data structure that holds a sequence of elements of the same data type. | 1. `[]` Empty array.<br />2. `[1]` Single integer.<br />3. `["a","hello","world"]` 3 strings. | Arrays must contain elements of the same data type.          |
 > | 2D Array | An array of arrays, where each sub-array represents a row. It can hold elements in a matrix-like structure. | 1. `[]` Empty 2D array.<br />2. `[[]]` 1 row, 0 elements.<br />3. `[[1]]` 1 row, 1 element.<br />4. `[[1,2],[3,4]]` 2x2 array.<br />5. `[[1],[2,3],[4,5,6]]` 3 rows. | 2D arrays can either have a fixed number of columns (e.g., `int[,]` in C#) or a variable number of columns (e.g., `int[][]` in C#). Always check the problem's requirements or the programming language's specifics to understand the structure. |
+>
+> Binary Tree
+>
+> - `[]`
+>
+>   ```text
+>   Empty tree. The root is a reference to NULL (C/C++), null (Java/C#/Javascript), None (Python), or nil (Ruby).
+>   ```
+>
+> - `[1, 2, 3]`
+>
+>   ```text
+>        1
+>       / \
+>      2   3
+>   ```
+>
+> - `[1, null, 2, 3]`
+>
+>   ```text
+>        1
+>         \
+>          2
+>         /
+>        3
+>   ```
+>
+> - `[5, 4, 7, 3, null, 2, null, -1, null, 9]`
+>
+>   ```text
+>         5
+>        / \
+>       4   7
+>      /   /
+>     3   2
+>    /   /
+>   -1  9
+>   ```
 
-**Linked List** and **Binary Tree** are not implemented yet.
+**Linked List** are not implemented yet.

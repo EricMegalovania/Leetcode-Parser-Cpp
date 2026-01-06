@@ -54,3 +54,6 @@ vv_double = [
   [1919.81]
 ]
 _ll = -9223372036854775808
+_tree_empty = []
+_tree_3nodes = [1, null, 2, 3]
+_tree_large = [5, 4, 7, 3, null, 2, null, -1, null, 9]

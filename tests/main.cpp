@@ -4,9 +4,18 @@
 using namespace std;
 using namespace leetcode_IOWrapper;
 
+using TreeNode = leetcode_struct::TreeNode;
+// struct TreeNode {
+// 	int val; TreeNode *left, *right;
+// 	TreeNode() : val(0), left(nullptr), right(nullptr) {}
+// 	TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+// 	TreeNode(int x, TreeNode *ls, TreeNode *rs) : val(x), left(ls), right(rs) {}
+// };
+
 using LL = long long;
 int main() {
 	freopen("input.txt","r",stdin);
+	// internal_debug().set_debug_mode();
 	
 	auto [i1] = read<int>();
 	auto [i2] = read<int>();
@@ -57,5 +66,8 @@ int main() {
 
 	auto [_string, _bool, vv_double, _ll] = read<string, bool, vector<vector<double>>, LL>();
 	write(_string, _bool, vv_double, _ll);
+
+	auto [_tree_empty, _tree_3nodes, _tree_large] = read<TreeNode*, TreeNode*, TreeNode*>();
+	write(_tree_empty, _tree_3nodes, _tree_large);
 	return 0;
 }
