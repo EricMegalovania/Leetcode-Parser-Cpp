@@ -285,7 +285,7 @@ namespace leetcode_input {
 				} else if (isSeparator(peekNextChar(is))) {
 					is.get();
 				} else {
-					throw std::invalid_argument("Expected ',' or ']' after TreeNode* element \'" + std::string(1, peekNextChar(is)) + std::string("\'"));
+					throw std::invalid_argument("Expected ',' or ']' after TreeNode* element");
 				}
 
 				return 1;
